@@ -36,9 +36,9 @@ dropdb: ./Makefile ./TS.db
 	echo 'allow url http://impredicative.com*' >> .cake3/tmp__TS_in
 	echo 'allow url http://hit.msk.ru*' >> .cake3/tmp__TS_in
 	echo 'debug' >> .cake3/tmp__TS_in
-	echo 'library ./lib/urweb-prelude' >> .cake3/tmp__TS_in
 	echo 'library ./lib/uru3/Bootstrap' >> .cake3/tmp__TS_in
 	echo 'library ./lib/urweb-monad-pack' >> .cake3/tmp__TS_in
+	echo 'library ./lib/urweb-prelude' >> .cake3/tmp__TS_in
 	echo 'sql ./TS.sql' >> .cake3/tmp__TS_in
 	echo 'database dbname=TS' >> .cake3/tmp__TS_in
 	echo 'rewrite all TS/main' >> .cake3/tmp__TS_in

@@ -23,10 +23,12 @@ val aria = data_attr aria_kind
 con cat = [Id = int, CNam = string]
 
 table category : (cat)
+  PRIMARY KEY Id
 
 con store = [Id = int, Nam = string, Price = string, CId = int]
 
 table store : (store)
+  PRIMARY KEY Id
 
 fun template (mb:transaction xbody) : transaction page =
   u <- ap show currentUrl;
@@ -42,12 +44,12 @@ fun template (mb:transaction xbody) : transaction page =
           <div class={cl (B.navbar :: B.navbar_inverse :: B.navbar_fixed_top :: [])} role="navigation">
             <div class={B.container}>
               <div class={B.navbar_header}>
-                <a class={B.navbar_brand} href={url (main {})}>TsyrenShop</a>
+                <a class={B.navbar_brand} href={links.Main}>TsyrenShop</a>
               </div>
               <div class={cl (B.collapse :: B.navbar_collapse :: [])}>
                 <ul class={cl (B.nav :: B.navbar_nav :: [])}>
-                  {active (url (catalog {})) "Каталог"}
-                  {active (url (contacts {})) "Контакты"}
+                  {active links.Cat "Каталог"}
+                  {active links.Contacts "Контакты"}
                 </ul>
               </div>
             </div>
@@ -81,22 +83,21 @@ fun template (mb:transaction xbody) : transaction page =
 
   where
 
+    val links = {
+      Main = url (main {}),
+      Cat = url (catalog {}),
+      Contacts = url (contacts {})
+     }
+
     fun active (l:url) (t:string) =
       case strsindex (show l) u of
         |None => <xml><li><a href={l}>{[t]}</a></li></xml>
         |Some _ => <xml><li class={B.active}><a href={l}>{[t]}</a></li></xml>
 
-    (* fun myHeaders f r = *) 
-    (*   f (swap Uru.addHeader r *)
-    (*     <xml> *)
-    (*       <title>Tsyren shop</title> *)
-    (*     </xml>) *)
-
     fun myHeaders f r = 
       f (swap Uru.addHeader r
         <xml>
-          <title>Compet</title>
-          <link rel="stylesheet" href={url (catalog {})}/>
+          <title>Tsyren shop</title>
         </xml>)
   end
 
@@ -106,9 +107,18 @@ and contacts {} : transaction page =
   )
 
 and catalog {} : transaction page =
-  template (
-    return <xml></xml>
-  )
+  template ( X.run (
+    push_back_xml
+    <xml>catalog</xml>;
+
+    X.query_
+    (SELECT * FROM store AS S)
+    (fn fs =>
+      push_back_xml <xml>{[fs.S.Id]}</xml>
+    );
+
+    return {}
+  ))
 
 and main {} : transaction page = redirect(url(catalog {}))
 

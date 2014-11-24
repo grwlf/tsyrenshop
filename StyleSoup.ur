@@ -1,7 +1,7 @@
 structure P = Prelude
 structure L = List
 
-fun footer_doc_links l =
+fun footer_doc_links (l:list xbody) : xbody =
   <xml>
   <li style="display:inline">
   {P.head l}

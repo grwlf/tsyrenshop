@@ -29,9 +29,9 @@ project = do
     allow url "http://impredicative.com*"
     allow url "http://hit.msk.ru*"
     debug
-    library p
     library b
     library m
+    library p
     sql (pn.="sql")
     database ("dbname="++(takeBaseName pn))
     rewrite UW.all "TS/main"
