@@ -20,6 +20,17 @@ val push_back_xml = @@X.push_back_xml
 val data = data_attr data_kind
 val aria = data_attr aria_kind
 
+(*
+
+ ____        _       _____                      
+|  _ \  __ _| |_ __ |_   _|   _ _ __   ___  ___ 
+| | | |/ _` | __/ _` || || | | | '_ \ / _ \/ __|
+| |_| | (_| | || (_| || || |_| | |_) |  __/\__ \
+|____/ \__,_|\__\__,_||_| \__, | .__/ \___||___/
+                          |___/|_|              
+
+*)
+
 con cat = [Id = int, CNam = string]
 
 table category : (cat)
@@ -29,6 +40,24 @@ con store = [Id = int, Nam = string, Price = string, CId = int]
 
 table store : (store)
   PRIMARY KEY Id
+
+
+(*
+ _   _ _   _ _ 
+| | | | |_(_) |
+| | | | __| | |
+| |_| | |_| | |
+ \___/ \__|_|_|
+
+*)
+
+fun tnest [a ::: Type] (nb : X.state xtable a) : X.state xbody (xbody * a) =
+  nest (fn x =>
+    <xml>
+      <table class={cl (B.bs3_table :: B.table_striped :: [])}>
+        {x}
+      </table>
+    </xml>) nb
 
 fun template (mb:transaction xbody) : transaction page =
   u <- ap show currentUrl;
@@ -101,24 +130,78 @@ fun template (mb:transaction xbody) : transaction page =
         </xml>)
   end
 
+(*
+ __  __       _       
+|  \/  | __ _(_)_ __  
+| |\/| |/ _` | | '_ \ 
+| |  | | (_| | | | | |
+|_|  |_|\__,_|_|_| |_|
+                      
+*)
+
 and contacts {} : transaction page =
   template (
     return <xml></xml>
   )
 
-and catalog {} : transaction page =
+and catalog_cat {} : transaction page =
   template ( X.run (
     push_back_xml
-    <xml>catalog</xml>;
+    <xml><h1>Каталог</h1></xml>;
 
-    X.query_
-    (SELECT * FROM store AS S)
-    (fn fs =>
-      push_back_xml <xml>{[fs.S.Id]}</xml>
-    );
+    push_back ( tnest (
+      push_back_xml
+      <xml><tr>
+        <th>Id</th>
+        <th>Name</th>
+      </tr></xml>;
+
+      X.query_
+      (SELECT * FROM category AS C)
+      (fn fs =>
+        push_back_xml
+        <xml><tr>
+          <td>{[fs.C.Id]}</td>
+          <td>{[fs.C.CNam]}</td>
+        </tr></xml>
+      );
+
+      return {}
+    ));
 
     return {}
   ))
 
-and main {} : transaction page = redirect(url(catalog {}))
+and catalog {} : transaction page =
+  template ( X.run (
+    push_back_xml
+    <xml><h1>catalog</h1></xml>;
+
+    push_back ( tnest (
+      push_back_xml
+      <xml><tr>
+        <th>Id</th>
+        <th>CId</th>
+        <th>Name</th>
+        <th>Price</th>
+      </tr></xml>;
+
+      X.query_
+      (SELECT * FROM store AS S)
+      (fn fs =>
+        push_back_xml
+        <xml><tr>
+          <td>{[fs.S.Id]}</td>
+          <td>{[fs.S.CId]}</td>
+          <td>{[fs.S.Nam]}</td>
+          <td>{[fs.S.Price]}</td>
+        </tr></xml>
+      );
+      return {}
+    ));
+
+    return {}
+  ))
+
+and main {} : transaction page = redirect(url(catalog_cat {}))
 

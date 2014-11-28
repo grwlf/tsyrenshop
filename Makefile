@@ -12,7 +12,7 @@ URCC = $(shell $(shell urweb -print-ccompiler) -print-prog-name=gcc)
 URINCL = -I$(shell urweb -print-cinclude) 
 URVERSION = $(shell urweb -version)
 .PHONY: all
-all: ./Makefile ./TS.db ./TS.exe ./TS.sql
+all: ./Makefile ./TS.exe ./TS.sql
 .PHONY: dropdb
 dropdb: ./Makefile ./TS.db
 ./TS.db: ./Makefile ./TS.exe ./TS.sql

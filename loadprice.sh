@@ -26,7 +26,8 @@ cat $FILE | tail -n +$SL | { IFS=':' ; while read x nm price qty ; do
     echo $I
     id=`expr $id '+' 1`
   else
-    I="INSERT INTO uw_ts_category(uw_id,uw_cnam) VALUES($cid, '$nm')"
+    I="INSERT INTO uw_ts_category(uw_id,uw_cnam) VALUES($cid, '$nm');"
+    echo $I
     cid=`expr $cid '+' 1`
   fi
 

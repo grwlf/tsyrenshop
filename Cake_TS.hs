@@ -56,7 +56,6 @@ project = do
 
   rule $ do
     phony "all"
-    depend db
     depend a
 
 main = do
