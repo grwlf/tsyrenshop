@@ -54,6 +54,7 @@ dropdb: ./Makefile ./TS.db
 	echo '$$/list' >> .cake3/tmp__TS_in
 	echo '$$/option' >> .cake3/tmp__TS_in
 	echo '$$/string' >> .cake3/tmp__TS_in
+	echo '$$/char' >> .cake3/tmp__TS_in
 	echo './StyleSoup' >> .cake3/tmp__TS_in
 	echo './XmlGen' >> .cake3/tmp__TS_in
 	echo './TS' >> .cake3/tmp__TS_in

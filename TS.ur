@@ -31,7 +31,7 @@ val aria = data_attr aria_kind
 
 *)
 
-con cat = [Id = int, CNam = string]
+con cat = [Id = int, ParentId = int, CNam = string]
 
 table category : (cat)
   PRIMARY KEY Id
@@ -50,6 +50,8 @@ table store : (store)
  \___/ \__|_|_|
 
 *)
+
+fun fstcap s = (String.mp toupper (substring s 0 1)) ^ (String.mp tolower (substring s 1 ((strlen s) -1)))
 
 fun tnest [a ::: Type] (nb : X.state xtable a) : X.state xbody (xbody * a) =
   nest (fn x =>
@@ -102,6 +104,7 @@ fun template (mb:transaction xbody) : transaction page =
                   <xml><a href={bless "http://github.com/grwlf/tsyrenshop"}>Sources</a></xml> ::
                   <xml><a href={bless "http://impredicative.com/ur/"}>Ur/Web</a></xml> ::
                   <xml><a href={bless "http://github.com"}>GiHub</a></xml> ::
+                  <xml><a href={links.Admin}>Admin</a></xml> ::
                   []
                   )}
                 </ul>
@@ -117,7 +120,8 @@ fun template (mb:transaction xbody) : transaction page =
     val links = {
       Main = url (main {}),
       Cat = url (catalog {}),
-      Contacts = url (contacts {})
+      Contacts = url (contacts {}),
+      Admin = url (admin {})
      }
 
     fun active (l:url) (t:string) =
@@ -142,6 +146,11 @@ fun template (mb:transaction xbody) : transaction page =
                       
 *)
 
+and admin {} : transaction page =
+  template (
+    return <xml></xml>
+  )
+
 and contacts {} : transaction page =
   template (
     return <xml></xml>
@@ -152,25 +161,27 @@ and catalog_cat {} : transaction page =
     push_back_xml
     <xml><h1>Каталог</h1></xml>;
 
-    push_back ( tnest (
+    (* push_back_xml *)
+    (* <xml><h3>{[fstcap "string1"]}</h3> *)
+    (* <h3>{[fstcap "STRING2"]}</h3> *)
+    (* <h3>{[fstcap "строка1"]}</h3> *)
+    (* <h3>{[fstcap "СТРОКА2"]}</h3> *)
+    (* </xml>; *)
+
+    X.query_
+    (SELECT * FROM category AS C1 WHERE C1.ParentId=-1)
+    (fn c1 =>
       push_back_xml
-      <xml><tr>
-        <th>Id</th>
-        <th>Name</th>
-      </tr></xml>;
+      <xml><h3>{[fstcap c1.C1.CNam]}</h3></xml>;
 
       X.query_
-      (SELECT * FROM category AS C)
-      (fn fs =>
-        push_back_xml
-        <xml><tr>
-          <td>{[fs.C.Id]}</td>
-          <td>{[fs.C.CNam]}</td>
-        </tr></xml>
+      (SELECT * FROM category AS C WHERE C.ParentId={[c1.C1.Id]})
+      (fn c2 =>
+        push_back_xml (StyleSoup.badge c2.C.CNam 33)
       );
 
       return {}
-    ));
+    );
 
     return {}
   ))

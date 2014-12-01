@@ -39,6 +39,7 @@ project = do
     ur (sys "list")
     ur (sys "option")
     ur (sys "string")
+    ur (sys "char")
     ur (single $ file "StyleSoup.ur")
     ur (single $ file "XmlGen.ur")
     ur (pair $ file "TS.ur")
