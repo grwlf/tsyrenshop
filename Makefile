@@ -21,7 +21,7 @@ dropdb: ./Makefile ./TS.db
 	psql -f ./TS.sql TS
 	touch ./TS.db
 ./TS.exe: .fix-multy1
-./TS.urp: ./Makefile ./StyleSoup.ur ./TS.ur ./TS.urs ./XmlGen.ur ./lib/uru3/Bootstrap/lib.urp ./lib/urweb-monad-pack/lib.urp ./lib/urweb-prelude/lib.urp .cake3/tmp__TS_in
+./TS.urp: ./Makefile ./StyleSoup.ur ./TS.ur ./TS.urs ./XmlGen.ur ./lib/uru3/Bootstrap/lib.urp ./lib/urweb-monad-pack/lib.urp ./lib/urweb-prelude/lib.urp .cake3/tmp__TS_in autogen/TS_css.ur autogen/TS_css.urs autogen/TS_css_c.h autogen/TS_css_c.o
 	cat .cake3/tmp__TS_in > ./TS.urp
 .cake3/tmp__TS_in: ./Makefile
 	-rm -rf .cake3/tmp__TS_in
@@ -42,7 +42,15 @@ dropdb: ./Makefile ./TS.db
 	echo 'sql ./TS.sql' >> .cake3/tmp__TS_in
 	echo 'database dbname=TS' >> .cake3/tmp__TS_in
 	echo 'rewrite all TS/main' >> .cake3/tmp__TS_in
+	echo 'include autogen/TS_css_c.h' >> .cake3/tmp__TS_in
+	echo 'link autogen/TS_css_c.o' >> .cake3/tmp__TS_in
+	echo 'ffi autogen/TS_css_c' >> .cake3/tmp__TS_in
+	echo 'ffi autogen/TS_css_js' >> .cake3/tmp__TS_in
+	echo 'allow mime text/css' >> .cake3/tmp__TS_in
+	echo 'safeGet TS_css/blobpage' >> .cake3/tmp__TS_in
+	echo 'safeGet TS_css/blob' >> .cake3/tmp__TS_in
 	echo '' >> .cake3/tmp__TS_in
+	echo 'autogen/TS_css' >> .cake3/tmp__TS_in
 	echo '$$/list' >> .cake3/tmp__TS_in
 	echo '$$/option' >> .cake3/tmp__TS_in
 	echo '$$/string' >> .cake3/tmp__TS_in
@@ -160,6 +168,8 @@ autogen/Glyphicons_halflings_regular_ttf_c.o: ./Makefile autogen/Glyphicons_half
 	$(URCC) -c $(URINCL) $(UR_CFLAGS)  -o autogen/Glyphicons_halflings_regular_ttf_c.o autogen/Glyphicons_halflings_regular_ttf_c.c
 autogen/Glyphicons_halflings_regular_woff_c.o: ./Makefile autogen/Glyphicons_halflings_regular_woff_c.c $(call GUARD,URCC) $(call GUARD,URINCL) $(call GUARD,UR_CFLAGS)
 	$(URCC) -c $(URINCL) $(UR_CFLAGS)  -o autogen/Glyphicons_halflings_regular_woff_c.o autogen/Glyphicons_halflings_regular_woff_c.c
+autogen/TS_css_c.o: ./Makefile autogen/TS_css_c.c $(call GUARD,URCC) $(call GUARD,URINCL) $(call GUARD,UR_CFLAGS)
+	$(URCC) -c $(URINCL) $(UR_CFLAGS)  -o autogen/TS_css_c.o autogen/TS_css_c.c
 $(call GUARD,URCC):
 	rm -f .cake3/GUARD_URCC_*
 	touch $@
@@ -227,11 +237,13 @@ autogen/Glyphicons_halflings_regular_svg_c.o: .fix-multy1
 autogen/Glyphicons_halflings_regular_ttf_c.o: .fix-multy1
 .PHONY: autogen/Glyphicons_halflings_regular_woff_c.o
 autogen/Glyphicons_halflings_regular_woff_c.o: .fix-multy1
+.PHONY: autogen/TS_css_c.o
+autogen/TS_css_c.o: .fix-multy1
 
 endif
 .PHONY: clean
 clean: 
-	-rm ./TS.db ./TS.exe ./TS.sql ./TS.urp ./lib/uru3/Bootstrap/lib.urp ./lib/urweb-monad-pack/lib.urp ./lib/urweb-prelude/lib.urp .cake3/tmp__TS_in .cake3/tmp__liburu3Bootstraplib_in .cake3/tmp__liburweb-monad-packlib_in .cake3/tmp__liburweb-preludelib_in autogen/Bootstrap_css_c.o autogen/Bootstrap_min_js_c.o autogen/Bootstrap_theme_css_c.o autogen/FormSignin_css_c.o autogen/Glyphicons_halflings_regular_eot_c.o autogen/Glyphicons_halflings_regular_svg_c.o autogen/Glyphicons_halflings_regular_ttf_c.o autogen/Glyphicons_halflings_regular_woff_c.o
+	-rm ./TS.db ./TS.exe ./TS.sql ./TS.urp ./lib/uru3/Bootstrap/lib.urp ./lib/urweb-monad-pack/lib.urp ./lib/urweb-prelude/lib.urp .cake3/tmp__TS_in .cake3/tmp__liburu3Bootstraplib_in .cake3/tmp__liburweb-monad-packlib_in .cake3/tmp__liburweb-preludelib_in autogen/Bootstrap_css_c.o autogen/Bootstrap_min_js_c.o autogen/Bootstrap_theme_css_c.o autogen/FormSignin_css_c.o autogen/Glyphicons_halflings_regular_eot_c.o autogen/Glyphicons_halflings_regular_svg_c.o autogen/Glyphicons_halflings_regular_ttf_c.o autogen/Glyphicons_halflings_regular_woff_c.o autogen/TS_css_c.o
 	-rm -rf .cake3
 
 endif

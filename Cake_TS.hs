@@ -35,6 +35,7 @@ project = do
     sql (pn.="sql")
     database ("dbname="++(takeBaseName pn))
     rewrite UW.all "TS/main"
+    bin (file "TS.css") []
     ur (sys "list")
     ur (sys "option")
     ur (sys "string")

@@ -88,23 +88,25 @@ fun template (mb:transaction xbody) : transaction page =
           {b}
           </div>
 
-          <div style="padding-top:20px;position:absolute;bottom:0; width:100%; height:100px;">
-            <div class={B.container} style="text-align:center">
-              <hr/>
-              <p class={B.text_muted}>Proudly designed by
-                <a href={bless "http://github.com/grwlf"}>@grwlf</a>.
-                Powerd by <a href={bless "http://impredicative.com/ur/"}>Ur/Web</a> framework.
-              </p>
-              <p class={B.text_muted}>
-              <ul style="padding-left: 0px; margin-top: 20px; color: #999;">
-                {StyleSoup.footer_doc_links (
-                <xml><a href={bless "http://github.com/grwlf/tsyrenshop"}>Sources</a></xml> ::
-                <xml><a href={bless "http://impredicative.com/ur/"}>Ur/Web</a></xml> ::
-                <xml><a href={bless "http://github.com"}>GiHub</a></xml> ::
-                []
-                )}
-              </ul>
-              </p>
+          <div style="position:relative; min-height: 100%;">
+            <div style="padding-top:20px;position:absolute;bottom:0; width:100%; height:100px;">
+              <div class={B.container} style="text-align:center">
+                <hr/>
+                <p class={B.text_muted}>Proudly designed by
+                  <a href={bless "http://github.com/grwlf"}>@grwlf</a>.
+                  Powerd by <a href={bless "http://impredicative.com/ur/"}>Ur/Web</a> framework.
+                </p>
+                <p class={B.text_muted}>
+                <ul style="padding-left: 0px; margin-top: 20px; color: #999;">
+                  {StyleSoup.footer_doc_links (
+                  <xml><a href={bless "http://github.com/grwlf/tsyrenshop"}>Sources</a></xml> ::
+                  <xml><a href={bless "http://impredicative.com/ur/"}>Ur/Web</a></xml> ::
+                  <xml><a href={bless "http://github.com"}>GiHub</a></xml> ::
+                  []
+                  )}
+                </ul>
+                </p>
+              </div>
             </div>
           </div>
         </xml>
@@ -127,6 +129,7 @@ fun template (mb:transaction xbody) : transaction page =
       f (swap Uru.addHeader r
         <xml>
           <title>Tsyren shop</title>
+          <link rel="stylesheet" href={TS_css.geturl}/>
         </xml>)
   end
 
