@@ -9,6 +9,7 @@ unexport MAIN
 # Main section
 
 URCC = $(shell $(shell urweb -print-ccompiler) -print-prog-name=gcc)
+URCPP = $(shell $(shell urweb -print-ccompiler) -print-prog-name=g++)
 URINCL = -I$(shell urweb -print-cinclude) 
 URVERSION = $(shell urweb -version)
 .PHONY: all
@@ -21,7 +22,7 @@ dropdb: ./Makefile ./TS.db
 	psql -f ./TS.sql TS
 	touch ./TS.db
 ./TS.exe: .fix-multy1
-./TS.urp: ./Makefile ./StyleSoup.ur ./TS.ur ./TS.urs ./XmlGen.ur ./lib/uru3/Bootstrap/lib.urp ./lib/urweb-monad-pack/lib.urp ./lib/urweb-prelude/lib.urp .cake3/tmp__TS_in autogen/TS_css.ur autogen/TS_css.urs autogen/TS_css_c.h autogen/TS_css_c.o
+./TS.urp: ./Makefile ./StyleSoup.ur ./TS.ur ./TS.urs ./XmlGen.ur ./lib/uru3/Bootstrap/lib.urp ./lib/urweb-monad-pack/lib.urp ./lib/urweb-prelude/lib.urp ./lib/urweb-utf8/lib.urp .cake3/tmp__TS_in autogen/TS_css.ur autogen/TS_css.urs autogen/TS_css_c.h autogen/TS_css_c.o
 	cat .cake3/tmp__TS_in > ./TS.urp
 .cake3/tmp__TS_in: ./Makefile
 	-rm -rf .cake3/tmp__TS_in
@@ -39,6 +40,7 @@ dropdb: ./Makefile ./TS.db
 	echo 'library ./lib/uru3/Bootstrap' >> .cake3/tmp__TS_in
 	echo 'library ./lib/urweb-monad-pack' >> .cake3/tmp__TS_in
 	echo 'library ./lib/urweb-prelude' >> .cake3/tmp__TS_in
+	echo 'library ./lib/urweb-utf8' >> .cake3/tmp__TS_in
 	echo 'sql ./TS.sql' >> .cake3/tmp__TS_in
 	echo 'database dbname=TS' >> .cake3/tmp__TS_in
 	echo 'rewrite all TS/main' >> .cake3/tmp__TS_in
@@ -58,6 +60,17 @@ dropdb: ./Makefile ./TS.db
 	echo './StyleSoup' >> .cake3/tmp__TS_in
 	echo './XmlGen' >> .cake3/tmp__TS_in
 	echo './TS' >> .cake3/tmp__TS_in
+./lib/urweb-utf8/lib.urp: ./Makefile ./lib/urweb-utf8/UTF8.ur ./lib/urweb-utf8/UTF8_ffi.h ./lib/urweb-utf8/UTF8_ffi.o .cake3/tmp__liburweb-utf8lib_in
+	cat .cake3/tmp__liburweb-utf8lib_in > ./lib/urweb-utf8/lib.urp
+.cake3/tmp__liburweb-utf8lib_in: ./Makefile
+	-rm -rf .cake3/tmp__liburweb-utf8lib_in
+	echo 'ffi ../.././lib/urweb-utf8/UTF8_ffi' >> .cake3/tmp__liburweb-utf8lib_in
+	echo 'include ../.././lib/urweb-utf8/UTF8_ffi.h' >> .cake3/tmp__liburweb-utf8lib_in
+	echo 'link ../.././lib/urweb-utf8/UTF8_ffi.o' >> .cake3/tmp__liburweb-utf8lib_in
+	echo 'link -lstdc++ -lutf8proc' >> .cake3/tmp__liburweb-utf8lib_in
+	echo '' >> .cake3/tmp__liburweb-utf8lib_in
+	echo '$$/list' >> .cake3/tmp__liburweb-utf8lib_in
+	echo '../.././lib/urweb-utf8/UTF8' >> .cake3/tmp__liburweb-utf8lib_in
 ./lib/urweb-monad-pack/lib.urp: ./Makefile ./lib/urweb-monad-pack/error.ur ./lib/urweb-monad-pack/identity.ur ./lib/urweb-monad-pack/pure.ur ./lib/urweb-monad-pack/state.ur .cake3/tmp__liburweb-monad-packlib_in
 	cat .cake3/tmp__liburweb-monad-packlib_in > ./lib/urweb-monad-pack/lib.urp
 .cake3/tmp__liburweb-monad-packlib_in: ./Makefile
@@ -150,6 +163,8 @@ dropdb: ./Makefile ./TS.db
 	echo '$$/list' >> .cake3/tmp__liburweb-preludelib_in
 	echo '../.././lib/urweb-prelude/src/Prelude' >> .cake3/tmp__liburweb-preludelib_in
 ./TS.sql: .fix-multy1
+./lib/urweb-utf8/UTF8_ffi.o: ./Makefile ./lib/urweb-utf8/UTF8_ffi.cpp $(call GUARD,URCPP) $(call GUARD,URINCL) $(call GUARD,UR_CFLAGS)
+	$(URCPP) -c $(UR_CFLAGS) $(URINCL) -std=c++11 -o ./lib/urweb-utf8/UTF8_ffi.o ./lib/urweb-utf8/UTF8_ffi.cpp
 .INTERMEDIATE: .fix-multy1
 .fix-multy1: ./Makefile ./TS.urp $(call GUARD,URVERSION)
 	urweb -dbms postgres ./TS
@@ -173,6 +188,9 @@ autogen/TS_css_c.o: ./Makefile autogen/TS_css_c.c $(call GUARD,URCC) $(call GUAR
 	$(URCC) -c $(URINCL) $(UR_CFLAGS)  -o autogen/TS_css_c.o autogen/TS_css_c.c
 $(call GUARD,URCC):
 	rm -f .cake3/GUARD_URCC_*
+	touch $@
+$(call GUARD,URCPP):
+	rm -f .cake3/GUARD_URCPP_*
 	touch $@
 $(call GUARD,URINCL):
 	rm -f .cake3/GUARD_URINCL_*
@@ -202,6 +220,10 @@ dropdb: .fix-multy1
 ./TS.urp: .fix-multy1
 .PHONY: .cake3/tmp__TS_in
 .cake3/tmp__TS_in: .fix-multy1
+.PHONY: ./lib/urweb-utf8/lib.urp
+./lib/urweb-utf8/lib.urp: .fix-multy1
+.PHONY: .cake3/tmp__liburweb-utf8lib_in
+.cake3/tmp__liburweb-utf8lib_in: .fix-multy1
 .PHONY: ./lib/urweb-monad-pack/lib.urp
 ./lib/urweb-monad-pack/lib.urp: .fix-multy1
 .PHONY: .cake3/tmp__liburweb-monad-packlib_in
@@ -216,6 +238,8 @@ dropdb: .fix-multy1
 .cake3/tmp__liburweb-preludelib_in: .fix-multy1
 .PHONY: ./TS.sql
 ./TS.sql: .fix-multy1
+.PHONY: ./lib/urweb-utf8/UTF8_ffi.o
+./lib/urweb-utf8/UTF8_ffi.o: .fix-multy1
 .INTERMEDIATE: .fix-multy1
 .fix-multy1: 
 	-mkdir .cake3
@@ -244,7 +268,7 @@ autogen/TS_css_c.o: .fix-multy1
 endif
 .PHONY: clean
 clean: 
-	-rm ./TS.db ./TS.exe ./TS.sql ./TS.urp ./lib/uru3/Bootstrap/lib.urp ./lib/urweb-monad-pack/lib.urp ./lib/urweb-prelude/lib.urp .cake3/tmp__TS_in .cake3/tmp__liburu3Bootstraplib_in .cake3/tmp__liburweb-monad-packlib_in .cake3/tmp__liburweb-preludelib_in autogen/Bootstrap_css_c.o autogen/Bootstrap_min_js_c.o autogen/Bootstrap_theme_css_c.o autogen/FormSignin_css_c.o autogen/Glyphicons_halflings_regular_eot_c.o autogen/Glyphicons_halflings_regular_svg_c.o autogen/Glyphicons_halflings_regular_ttf_c.o autogen/Glyphicons_halflings_regular_woff_c.o autogen/TS_css_c.o
+	-rm ./TS.db ./TS.exe ./TS.sql ./TS.urp ./lib/uru3/Bootstrap/lib.urp ./lib/urweb-monad-pack/lib.urp ./lib/urweb-prelude/lib.urp ./lib/urweb-utf8/UTF8_ffi.o ./lib/urweb-utf8/lib.urp .cake3/tmp__TS_in .cake3/tmp__liburu3Bootstraplib_in .cake3/tmp__liburweb-monad-packlib_in .cake3/tmp__liburweb-preludelib_in .cake3/tmp__liburweb-utf8lib_in autogen/Bootstrap_css_c.o autogen/Bootstrap_min_js_c.o autogen/Bootstrap_theme_css_c.o autogen/FormSignin_css_c.o autogen/Glyphicons_halflings_regular_eot_c.o autogen/Glyphicons_halflings_regular_svg_c.o autogen/Glyphicons_halflings_regular_ttf_c.o autogen/Glyphicons_halflings_regular_woff_c.o autogen/TS_css_c.o
 	-rm -rf .cake3
 
 endif

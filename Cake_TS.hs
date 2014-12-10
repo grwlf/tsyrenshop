@@ -5,9 +5,8 @@ import Development.Cake3.Ext.UrWeb as UW
 import qualified Cake_Bootstrap as Bootstrap hiding(main)
 import qualified Cake_Prelude as Prelude hiding(main)
 import qualified Cake_MonadPack as MonadPack hiding(main)
+import qualified Cake_UTF8 as UTF8 hiding(main)
 import Cake_TS_P
-
--- instance IsString File where fromString = file
 
 project = do
 
@@ -16,6 +15,7 @@ project = do
   p <- Prelude.thelib
   b <- Bootstrap.lib
   m <- MonadPack.lib
+  u <- UTF8.lib
 
   a <- uwapp "-dbms postgres" pn $ do
     allow mime "text/javascript";
@@ -32,6 +32,7 @@ project = do
     library b
     library m
     library p
+    library u
     sql (pn.="sql")
     database ("dbname="++(takeBaseName pn))
     rewrite UW.all "TS/main"

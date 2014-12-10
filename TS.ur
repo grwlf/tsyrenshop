@@ -4,6 +4,7 @@ structure P = Prelude
 structure CSS = CSS
 structure Str = String
 structure O = Option
+structure U = UTF8
 
 val swap = @@P.swap
 val ap = @@P.ap
@@ -51,7 +52,7 @@ table store : (store)
 
 *)
 
-fun fstcap s = (String.mp toupper (substring s 0 1)) ^ (String.mp tolower (substring s 1 ((strlen s) -1)))
+fun fstcap s = (U.str (U.toUpper (U.at s 0))) ^ (U.mp U.toLower (U.tail s))
 
 fun tnest [a ::: Type] (nb : X.state xtable a) : X.state xbody (xbody * a) =
   nest (fn x =>
@@ -177,7 +178,7 @@ and catalog_cat {} : transaction page =
       X.query_
       (SELECT * FROM category AS C WHERE C.ParentId={[c1.C1.Id]})
       (fn c2 =>
-        push_back_xml (StyleSoup.badge c2.C.CNam 33)
+        push_back_xml (StyleSoup.badge (fstcap c2.C.CNam) 33)
       );
 
       return {}
