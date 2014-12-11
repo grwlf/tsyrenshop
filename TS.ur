@@ -21,6 +21,9 @@ val push_back_xml = @@X.push_back_xml
 val data = data_attr data_kind
 val aria = data_attr aria_kind
 
+
+val nav = @@NavTag.nav
+
 (*
 
  ____        _       _____                      
@@ -62,7 +65,7 @@ fun tnest [a ::: Type] (nb : X.state xtable a) : X.state xbody (xbody * a) =
       </table>
     </xml>) nb
 
-fun template (mb:transaction xbody) : transaction page =
+fun template_ t (mb:transaction xbody) : transaction page =
   u <- ap show currentUrl;
   let
     Uru.run (
@@ -73,22 +76,30 @@ fun template (mb:transaction xbody) : transaction page =
       b <- mb;
       return
         <xml>
-          <div class={cl (B.navbar :: B.navbar_inverse :: B.navbar_fixed_top :: [])} role="navigation">
-            <div class={B.container}>
-              <div class={B.navbar_header}>
-                <a class={B.navbar_brand} href={links.Main}>TsyrenShop</a>
-              </div>
-              <div class={cl (B.collapse :: B.navbar_collapse :: [])}>
-                <ul class={cl (B.nav :: B.navbar_nav :: [])}>
-                  {active links.Cat "Каталог"}
-                  {active links.Contacts "Контакты"}
-                </ul>
-              </div>
-            </div>
-          </div>
+          <div class={B.container} style="margin-top:50px; margin-bottom:100px; max-width:730px">
 
-          <div class={B.container} style="margin-top:50px; margin-bottom:100px">
-          {b}
+            <div style="border-bottom:1px solid #e5e5e5; margin-bottom:30px; padding-bottom:19px">
+              <nav>
+                <ul class={cl (B.nav :: B.nav_pills :: B.pull_right :: [])}>
+                  {List.mapX (fn x => active x.Url x.Text) t.Menu}
+                </ul>
+              </nav>
+              <h3 class={B.text_muted}>Project name</h3>
+            </div>
+
+            <div class={B.jumbotron} style="text-align:center">
+              <h1>Jumbotron heading</h1>
+              <p class={B.lead}>Cras justo odio, dapibus ac facilisis
+              in, egestas eget quam. Fusce dapibus, tellus ac
+              cursus commodo, tortor mauris condimentum nibh, ut
+              fermentum massa justo sit amet risus.</p>
+              <p><a class={cl (B.btn :: B.btn_lg :: B.btn_success :: [])} href={url(main {})} role="button"
+                  style="font-size:21px">
+                Sign up today
+              </a></p>
+            </div>
+
+            {b}
           </div>
 
           <div style="position:relative; min-height: 100%;">
@@ -138,6 +149,14 @@ fun template (mb:transaction xbody) : transaction page =
         </xml>)
   end
 
+and template x = let template_ a x where
+    val a = {
+      Menu =  { Text = "Каталог", Url = url (catalog_cat {}) }
+           :: { Text = "Контакты", Url = url (main {}) }
+           :: []
+      }
+  end
+
 (*
  __  __       _       
 |  \/  | __ _(_)_ __  
@@ -159,16 +178,6 @@ and contacts {} : transaction page =
 
 and catalog_cat {} : transaction page =
   template ( X.run (
-    push_back_xml
-    <xml><h1>Каталог</h1></xml>;
-
-    (* push_back_xml *)
-    (* <xml><h3>{[fstcap "string1"]}</h3> *)
-    (* <h3>{[fstcap "STRING2"]}</h3> *)
-    (* <h3>{[fstcap "строка1"]}</h3> *)
-    (* <h3>{[fstcap "СТРОКА2"]}</h3> *)
-    (* </xml>; *)
-
     X.query_
     (SELECT * FROM category AS C1 WHERE C1.ParentId=-1)
     (fn c1 =>

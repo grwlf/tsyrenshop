@@ -86,6 +86,7 @@ dropdb: ./Makefile ./TS.db
 	-rm -rf .cake3/tmp__liburu3Bootstraplib_in
 	echo 'rewrite style Bootstrap/bs3_table table' >> .cake3/tmp__liburu3Bootstraplib_in
 	echo 'rewrite style Bootstrap/* [-]' >> .cake3/tmp__liburu3Bootstraplib_in
+	echo 'ffi ../../.././lib/uru3/Bootstrap/NavTag' >> .cake3/tmp__liburu3Bootstraplib_in
 	echo 'library ../../.././lib/uru3/Bootstrap/../Uru' >> .cake3/tmp__liburu3Bootstraplib_in
 	echo 'library ../../.././lib/uru3/Bootstrap/../JQuery' >> .cake3/tmp__liburu3Bootstraplib_in
 	echo 'include ../../../autogen/Glyphicons_halflings_regular_eot_c.h' >> .cake3/tmp__liburu3Bootstraplib_in
