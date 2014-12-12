@@ -65,6 +65,16 @@ fun tnest [a ::: Type] (nb : X.state xtable a) : X.state xbody (xbody * a) =
       </table>
     </xml>) nb
 
+fun rownest [a ::: Type] (nb : X.state xbody a) : X.state xbody (xbody * a) =
+  nest (fn x =>
+    <xml>
+      <div class={cl (B.row :: [])}>
+        {x}
+      </div>
+    </xml>) nb
+
+fun xnest f m = push_back (nest f m)
+
 fun template_ t (mb:transaction xbody) : transaction page =
   u <- ap show currentUrl;
   let
@@ -178,22 +188,30 @@ and contacts {} : transaction page =
 
 and catalog_cat {} : transaction page =
   template ( X.run (
-    X.query_
-    (SELECT * FROM category AS C1 WHERE C1.ParentId=-1)
-    (fn c1 =>
-      push_back_xml
-      <xml><h3>{[fstcap c1.C1.CNam]}</h3></xml>;
+
+    xnest (fn x=><xml><div class={B.row}>{x}</div></xml>) (
 
       X.query_
-      (SELECT * FROM category AS C WHERE C.ParentId={[c1.C1.Id]})
-      (fn c2 =>
-        push_back_xml (StyleSoup.badge (fstcap c2.C.CNam) 33)
+      (SELECT * FROM category AS C1 WHERE C1.ParentId=-1)
+      (fn c1 =>
+
+        xnest (fn x=><xml><div class={cl (B.col_lg_4 :: B.col_xs_6 :: [])}>{x}</div></xml>) (
+
+          push_back_xml
+          <xml><h3>{[fstcap c1.C1.CNam]}</h3></xml>;
+
+          X.query_
+          (SELECT * FROM category AS C WHERE C.ParentId={[c1.C1.Id]})
+          (fn c2 =>
+            push_back_xml (StyleSoup.badge (fstcap c2.C.CNam) 33)
+          );
+
+          return {}
+        )
       );
 
       return {}
-    );
-
-    return {}
+    )
   ))
 
 and catalog {} : transaction page =
