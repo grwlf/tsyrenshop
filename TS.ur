@@ -203,7 +203,9 @@ and catalog_cat {} : transaction page =
           X.query_
           (SELECT * FROM category AS C WHERE C.ParentId={[c1.C1.Id]})
           (fn c2 =>
-            push_back_xml (StyleSoup.badge (fstcap c2.C.CNam) 33)
+            push_back_xml
+            <xml><a href={url(main {})}>{[fstcap c2.C.CNam]}</a><br/></xml>;
+            return {}
           );
 
           return {}
