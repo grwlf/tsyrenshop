@@ -141,7 +141,7 @@ fun template_ t (mb:transaction xbody) : transaction page =
 
     val links = {
       Main = url (main {}),
-      Cat = url (catalog {}),
+      Cat = url (catalog_cat {}),
       Contacts = url (contacts {}),
       Admin = url (admin {})
      }
@@ -192,7 +192,18 @@ and catalog_cat {} : transaction page =
     xnest (fn x=><xml><div class={B.row}>{x}</div></xml>) (
 
       X.query_
-      (SELECT * FROM category AS C1 WHERE C1.ParentId=-1)
+      (SELECT C1.CNam, C1.Id, S.N FROM
+
+      category AS C1,
+      
+      (SELECT C.ParentId AS P, COUNT( * ) AS N
+       FROM category AS C
+       WHERE C.ParentId > 0
+       GROUP BY C.ParentId) AS S
+
+      WHERE S.P = C1.Id
+      ORDER BY S.N DESC
+      )
       (fn c1 =>
 
         xnest (fn x=><xml><div class={cl (B.col_lg_4 :: B.col_xs_6 :: [])}>{x}</div></xml>) (
@@ -201,10 +212,19 @@ and catalog_cat {} : transaction page =
           <xml><h3>{[fstcap c1.C1.CNam]}</h3></xml>;
 
           X.query_
-          (SELECT * FROM category AS C WHERE C.ParentId={[c1.C1.Id]})
+          (SELECT C.Id, C.CNam, G.N
+           FROM category AS C,
+
+           (SELECT S.CId AS CId, COUNT( * ) AS N
+            FROM store AS S
+            GROUP BY S.CId) AS G
+           
+           WHERE C.ParentId={[c1.C1.Id]} AND G.CId = C.Id AND G.N > 0
+           ORDER BY C.CNam
+          )
           (fn c2 =>
             push_back_xml
-            <xml><a href={url(main {})}>{[fstcap c2.C.CNam]}</a><br/></xml>;
+            <xml><a href={url(catalog c2.C.Id)}>{[fstcap c2.C.CNam]} ({[c2.G.N]})</a><br/></xml>;
             return {}
           );
 
@@ -216,27 +236,27 @@ and catalog_cat {} : transaction page =
     )
   ))
 
-and catalog {} : transaction page =
+and catalog cid : transaction page =
   template ( X.run (
+
+    n <- lift (oneRowE1 (SELECT C.CNam AS NM FROM category AS C WHERE C.Id = {[cid]}));
+
     push_back_xml
-    <xml><h1>catalog</h1></xml>;
+    <xml><h1>{[fstcap n]}</h1></xml>;
 
     push_back ( tnest (
       push_back_xml
       <xml><tr>
-        <th>Id</th>
-        <th>CId</th>
-        <th>Name</th>
-        <th>Price</th>
+        <th>Название</th>
+        <th>Цена</th>
       </tr></xml>;
 
       X.query_
-      (SELECT * FROM store AS S)
+      (SELECT * FROM store AS S WHERE S.CId = {[cid]}
+       ORDER BY S.Nam)
       (fn fs =>
         push_back_xml
         <xml><tr>
-          <td>{[fs.S.Id]}</td>
-          <td>{[fs.S.CId]}</td>
           <td>{[fs.S.Nam]}</td>
           <td>{[fs.S.Price]}</td>
         </tr></xml>
