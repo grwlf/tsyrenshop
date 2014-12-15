@@ -97,6 +97,8 @@ fun template_ t (mb:transaction xbody) : transaction page =
               <h3 class={B.text_muted}>Project name</h3>
             </div>
 
+            {if t.Jumbotron then
+            <xml>
             <div class={B.jumbotron} style="text-align:center">
               <h1>Jumbotron heading</h1>
               <p class={B.lead}>Cras justo odio, dapibus ac facilisis
@@ -108,6 +110,8 @@ fun template_ t (mb:transaction xbody) : transaction page =
                 Sign up today
               </a></p>
             </div>
+            </xml>
+            else <xml/>}
 
             {b}
           </div>
@@ -159,13 +163,16 @@ fun template_ t (mb:transaction xbody) : transaction page =
         </xml>)
   end
 
-and template x = let template_ a x where
+and template_m t x = let template_ (t ++ a) x where
     val a = {
       Menu =  { Text = "Каталог", Url = url (catalog_cat {}) }
            :: { Text = "Контакты", Url = url (main {}) }
            :: []
       }
   end
+
+and template_top x = template_m { Jumbotron = True } x
+and template x = template_m { Jumbotron = False } x
 
 (*
  __  __       _       
@@ -187,10 +194,11 @@ and contacts {} : transaction page =
   )
 
 and catalog_cat {} : transaction page =
-  template ( X.run (
+  template_top ( X.run (
 
     xnest (fn x=><xml><div class={B.row}>{x}</div></xml>) (
 
+      (* FIXME: What about -1 parent id? *)
       X.query_
       (SELECT C1.CNam, C1.Id, S.N FROM
 
@@ -239,10 +247,21 @@ and catalog_cat {} : transaction page =
 and catalog cid : transaction page =
   template ( X.run (
 
-    n <- lift (oneRowE1 (SELECT C.CNam AS NM FROM category AS C WHERE C.Id = {[cid]}));
+    (* FIXME: What about -1 parent id? *)
+    n <- lift (oneRow (SELECT C2.CNam, C.CNam, C.Id
+      FROM category AS C,
+           category AS C2
+      WHERE C.Id = {[cid]} AND
+            C.ParentId = C2.Id));
 
     push_back_xml
-    <xml><h1>{[fstcap n]}</h1></xml>;
+    <xml>
+    <ol class={B.breadcrumb}>
+      <li><a href={url(catalog_cat {})}>Главная</a></li>
+      <li><a href={url(catalog_cat {})}>{[fstcap n.C2.CNam]}</a></li>
+    </ol>
+    <h1>{[fstcap n.C.CNam]}</h1>
+    </xml>;
 
     push_back ( tnest (
       push_back_xml
