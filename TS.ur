@@ -87,7 +87,7 @@ fun template_ t (mb:transaction xbody) : transaction page =
       ss <- source "";
       return
         <xml>
-          <div class={B.container} style="margin-top:50px; margin-bottom:100px; max-width:730px">
+          <div class={B.container} style="margin-top:50px; margin-bottom:100px; max-width:730px; padding-bottom:50px">
 
             <div style="border-bottom:1px solid #e5e5e5; margin-bottom:30px; padding-bottom:19px">
 
@@ -113,7 +113,12 @@ fun template_ t (mb:transaction xbody) : transaction page =
                   <ctextbox source={ss} class={cl (B.form_control::B.input_sm::[])} placeholder="Поиск"/>
                   <span class={B.input_group_btn}>
                     <button class={CSS.list (B.btn ::B.input_sm :: B.btn_default :: [])} onclick={fn _ =>
-                      s <- get ss; redirect(url(search s))
+                      s <- get ss;
+                      ok <- rpc(search_check s);
+                      if ok then
+                        redirect(url(search s))
+                      else
+                        alert("Слишком короткая строка поиска")
                     }>
                       <span class={cl (B.glyphicon :: B.glyphicon_search :: [])}></span>&nbsp;
                     </button>
@@ -143,12 +148,11 @@ fun template_ t (mb:transaction xbody) : transaction page =
             {b}
           </div>
 
-          <div style="position:relative; min-height: 100%;">
-            <div style="padding-top:20px;position:absolute;bottom:0; width:100%; height:100px;">
+          (* <div style="position:relative; min-height: 100%;"> *)
+            <div style="margin-bottom:20px;position:absolute;bottom:0; width:100%; height:100px;">
               <div class={B.container} style="text-align:center">
                 <hr/>
-                <p class={B.text_muted}>Proudly designed by
-                  <a href={bless "http://github.com/grwlf"}>@grwlf</a>.
+                <p class={B.text_muted}>
                   Powerd by <a href={bless "http://impredicative.com/ur/"}>Ur/Web</a> framework.
                 </p>
                 <p class={B.text_muted}>
@@ -164,7 +168,7 @@ fun template_ t (mb:transaction xbody) : transaction page =
                 </p>
               </div>
             </div>
-          </div>
+          (* </div> *)
         </xml>
       )))))
 
@@ -172,8 +176,6 @@ fun template_ t (mb:transaction xbody) : transaction page =
 
     val links = {
       Main = url (main {}),
-      Cat = url (catalog_cat {}),
-      Contacts = url (contacts {}),
       Admin = url (admin {})
      }
 
@@ -196,7 +198,7 @@ fun template_ t (mb:transaction xbody) : transaction page =
 and template_m t x = let template_ (t ++ a) x where
     val a = {
       Menu =  { Text = "Каталог", Url = url (catalog_cat {}) }
-           :: { Text = "Контакты", Url = url (main {}) }
+           :: { Text = "Контакты", Url = url (contacts {}) }
            :: []
       }
   end
@@ -219,9 +221,12 @@ and admin {} : transaction page =
   )
 
 and contacts {} : transaction page =
-  template (
-    return <xml></xml>
-  )
+  template ( X.run (
+    push_back_xml
+    <xml>
+      <h1>Контакты</h1>
+    </xml>
+  ))
 
 and catalog_cat {} : transaction page =
   template_top ( X.run (
@@ -316,13 +321,51 @@ and catalog cid : transaction page =
     return {}
   ))
 
+and search_check q : transaction bool = return (UTF8.strlen q >= 3)
+
 and search (q:string) : transaction page =
   template ( X.run (
     push_back_xml
     <xml>
-      <h1>Search result for {[q]}</h1>
+      <h1>Результаты поиска для '{[q]}'</h1>
     </xml>;
-    return {}
+
+    z <- return ("%" ^ q ^ "%");
+    n <- lift (oneRowE1(SELECT COUNT ( * ) AS N FROM store AS S WHERE S.Nam LIKE {[z]}));
+
+    ok <- lift( search_check q);
+    case (ok, n>0)  of
+      |(True, True) =>
+        push_back ( tnest (
+          push_back_xml
+          <xml><tr>
+            <th>Название</th>
+            <th>Цена</th>
+          </tr></xml>;
+
+          X.query_
+          (SELECT * FROM store AS S WHERE S.Nam LIKE {[z]})
+          (fn fs =>
+            push_back_xml
+            <xml><tr>
+              <td>{[fs.S.Nam]}</td>
+              <td>{[fs.S.Price]}</td>
+            </tr></xml>
+          );
+          return {}
+        ))
+      |(False, _) =>
+        push_back_xml
+        <xml>
+          Слишком короткая строка поиска
+        </xml>;
+        return {}
+      |(_, False) =>
+        push_back_xml
+        <xml>
+          К сожалению, ничего не найдено
+        </xml>;
+        return {}
   ))
 
 
