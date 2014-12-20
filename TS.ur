@@ -84,23 +84,50 @@ fun template_ t (mb:transaction xbody) : transaction page =
     myHeaders (
     Uru.withBody (fn _ =>
       b <- mb;
+      ss <- source "";
       return
         <xml>
           <div class={B.container} style="margin-top:50px; margin-bottom:100px; max-width:730px">
 
             <div style="border-bottom:1px solid #e5e5e5; margin-bottom:30px; padding-bottom:19px">
-              <nav>
-                <ul class={cl (B.nav :: B.nav_pills :: B.pull_right :: [])}>
-                  {List.mapX (fn x => active x.Url x.Text) t.Menu}
-                </ul>
-              </nav>
-              <h3 class={B.text_muted}>Project name</h3>
+
+              <div class={B.row}>
+                <div class={B.col_md_12}>
+                (* <nav> *)
+                  <ul class={cl (B.nav :: B.nav_pills :: B.pull_right :: [])}>
+                    {List.mapX (fn x => active x.Url x.Text) t.Menu}
+                  </ul>
+                  <h1 style="padding-bottom:19px;margin-top:0;margin-bottom:0;line-height:40px;" class={B.text_muted}>
+                    Магазин
+                  </h1>
+                (* </nav> *)
+                </div>
+              </div>
+
             </div>
+
+            <div class={B.row} style="margin-bottom:30px"><div class={B.col_md_12}>
+
+              <form class={cl (B.form_inline :: B.pull_right :: [])} role="search">
+                <div class={B.input_group}>
+                  <ctextbox source={ss} class={cl (B.form_control::B.input_sm::[])} placeholder="Поиск"/>
+                  <span class={B.input_group_btn}>
+                    <button class={CSS.list (B.btn ::B.input_sm :: B.btn_default :: [])} onclick={fn _ =>
+                      s <- get ss; redirect(url(search s))
+                    }>
+                      <span class={cl (B.glyphicon :: B.glyphicon_search :: [])}></span>&nbsp;
+                    </button>
+                  </span>
+                </div>
+                <submit style="display:none" action={handler}/>
+              </form>
+
+            </div></div>
 
             {if t.Jumbotron then
             <xml>
             <div class={B.jumbotron} style="text-align:center">
-              <h1>Jumbotron heading</h1>
+              <h1>Реклама</h1>
               <p class={B.lead}>Cras justo odio, dapibus ac facilisis
               in, egestas eget quam. Fusce dapibus, tellus ac
               cursus commodo, tortor mauris condimentum nibh, ut
@@ -161,6 +188,9 @@ fun template_ t (mb:transaction xbody) : transaction page =
           <title>Tsyren shop</title>
           <link rel="stylesheet" href={TS_css.geturl}/>
         </xml>)
+
+     fun handler (f:{}) =
+       redirect (url(main {}))
   end
 
 and template_m t x = let template_ (t ++ a) x where
@@ -285,6 +315,16 @@ and catalog cid : transaction page =
 
     return {}
   ))
+
+and search (q:string) : transaction page =
+  template ( X.run (
+    push_back_xml
+    <xml>
+      <h1>Search result for {[q]}</h1>
+    </xml>;
+    return {}
+  ))
+
 
 and main {} : transaction page = redirect(url(catalog_cat {}))
 
