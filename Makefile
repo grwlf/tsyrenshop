@@ -80,7 +80,7 @@ dropdb: ./Makefile ./TS.db
 	echo '../.././lib/urweb-monad-pack/state' >> .cake3/tmp__liburweb-monad-packlib_in
 	echo '../.././lib/urweb-monad-pack/identity' >> .cake3/tmp__liburweb-monad-packlib_in
 	echo '../.././lib/urweb-monad-pack/pure' >> .cake3/tmp__liburweb-monad-packlib_in
-./lib/uru3/Bootstrap/lib.urp: ./Makefile ./lib/uru3/Bootstrap/../JQuery/lib.urp ./lib/uru3/Bootstrap/../Uru/lib.urp ./lib/uru3/Bootstrap/Bootstrap.ur ./lib/uru3/Bootstrap/Bootstrap.urs ./lib/uru3/Bootstrap/FormSignin.ur .cake3/tmp__liburu3Bootstraplib_in autogen/Bootstrap_css.ur autogen/Bootstrap_css.urs autogen/Bootstrap_css_c.h autogen/Bootstrap_css_c.o autogen/Bootstrap_min_js.ur autogen/Bootstrap_min_js.urs autogen/Bootstrap_min_js_c.h autogen/Bootstrap_min_js_c.o autogen/Bootstrap_theme_css.ur autogen/Bootstrap_theme_css.urs autogen/Bootstrap_theme_css_c.h autogen/Bootstrap_theme_css_c.o autogen/FormSignin_css.ur autogen/FormSignin_css.urs autogen/FormSignin_css_c.h autogen/FormSignin_css_c.o autogen/Glyphicons_halflings_regular_eot.ur autogen/Glyphicons_halflings_regular_eot.urs autogen/Glyphicons_halflings_regular_eot_c.h autogen/Glyphicons_halflings_regular_eot_c.o autogen/Glyphicons_halflings_regular_svg.ur autogen/Glyphicons_halflings_regular_svg.urs autogen/Glyphicons_halflings_regular_svg_c.h autogen/Glyphicons_halflings_regular_svg_c.o autogen/Glyphicons_halflings_regular_ttf.ur autogen/Glyphicons_halflings_regular_ttf.urs autogen/Glyphicons_halflings_regular_ttf_c.h autogen/Glyphicons_halflings_regular_ttf_c.o autogen/Glyphicons_halflings_regular_woff.ur autogen/Glyphicons_halflings_regular_woff.urs autogen/Glyphicons_halflings_regular_woff_c.h autogen/Glyphicons_halflings_regular_woff_c.o
+./lib/uru3/Bootstrap/lib.urp: ./Makefile ./lib/uru3/Bootstrap/../JQuery/lib.urp ./lib/uru3/Bootstrap/../Uru/lib.urp ./lib/uru3/Bootstrap/Bootstrap.ur ./lib/uru3/Bootstrap/Bootstrap.urs ./lib/uru3/Bootstrap/FormSignin.ur .cake3/tmp__liburu3Bootstraplib_in autogen/Bootstrap_css.ur autogen/Bootstrap_css.urs autogen/Bootstrap_css_c.h autogen/Bootstrap_css_c.o autogen/Bootstrap_min_js.ur autogen/Bootstrap_min_js.urs autogen/Bootstrap_min_js_c.h autogen/Bootstrap_min_js_c.o autogen/Bootstrap_theme_css.ur autogen/Bootstrap_theme_css.urs autogen/Bootstrap_theme_css_c.h autogen/Bootstrap_theme_css_c.o autogen/FormSignin_css.ur autogen/FormSignin_css.urs autogen/FormSignin_css_c.h autogen/FormSignin_css_c.o autogen/Glyphicons_halflings_regular_eot.ur autogen/Glyphicons_halflings_regular_eot.urs autogen/Glyphicons_halflings_regular_eot_c.h autogen/Glyphicons_halflings_regular_eot_c.o autogen/Glyphicons_halflings_regular_svg.ur autogen/Glyphicons_halflings_regular_svg.urs autogen/Glyphicons_halflings_regular_svg_c.h autogen/Glyphicons_halflings_regular_svg_c.o autogen/Glyphicons_halflings_regular_ttf.ur autogen/Glyphicons_halflings_regular_ttf.urs autogen/Glyphicons_halflings_regular_ttf_c.h autogen/Glyphicons_halflings_regular_ttf_c.o autogen/Glyphicons_halflings_regular_woff.ur autogen/Glyphicons_halflings_regular_woff.urs autogen/Glyphicons_halflings_regular_woff_c.h autogen/Glyphicons_halflings_regular_woff_c.o autogen/Tooltip_js.ur autogen/Tooltip_js.urs autogen/Tooltip_js_c.h autogen/Tooltip_js_c.o
 	cat .cake3/tmp__liburu3Bootstraplib_in > ./lib/uru3/Bootstrap/lib.urp
 .cake3/tmp__liburu3Bootstraplib_in: ./Makefile
 	-rm -rf .cake3/tmp__liburu3Bootstraplib_in
@@ -138,6 +138,15 @@ dropdb: ./Makefile ./TS.db
 	echo 'allow mime text/javascript' >> .cake3/tmp__liburu3Bootstraplib_in
 	echo 'safeGet Bootstrap_min_js/blobpage' >> .cake3/tmp__liburu3Bootstraplib_in
 	echo 'safeGet Bootstrap_min_js/blob' >> .cake3/tmp__liburu3Bootstraplib_in
+	echo 'include ../../../autogen/Tooltip_js_c.h' >> .cake3/tmp__liburu3Bootstraplib_in
+	echo 'link ../../../autogen/Tooltip_js_c.o' >> .cake3/tmp__liburu3Bootstraplib_in
+	echo 'ffi ../../../autogen/Tooltip_js_c' >> .cake3/tmp__liburu3Bootstraplib_in
+	echo 'jsFunc Tooltip_js_js.enable_tooltips = enable_tooltips__unit' >> .cake3/tmp__liburu3Bootstraplib_in
+	echo 'ffi ../../../autogen/Tooltip_js_js' >> .cake3/tmp__liburu3Bootstraplib_in
+	echo 'allow mime text/javascript' >> .cake3/tmp__liburu3Bootstraplib_in
+	echo 'safeGet Tooltip_js/blobpage' >> .cake3/tmp__liburu3Bootstraplib_in
+	echo 'safeGet Tooltip_js/blob' >> .cake3/tmp__liburu3Bootstraplib_in
+	echo 'safeGet Tooltip_js/enable_tooltips' >> .cake3/tmp__liburu3Bootstraplib_in
 	echo 'include ../../../autogen/FormSignin_css_c.h' >> .cake3/tmp__liburu3Bootstraplib_in
 	echo 'link ../../../autogen/FormSignin_css_c.o' >> .cake3/tmp__liburu3Bootstraplib_in
 	echo 'ffi ../../../autogen/FormSignin_css_c' >> .cake3/tmp__liburu3Bootstraplib_in
@@ -153,6 +162,7 @@ dropdb: ./Makefile ./TS.db
 	echo '../../../autogen/Bootstrap_css' >> .cake3/tmp__liburu3Bootstraplib_in
 	echo '../../../autogen/Bootstrap_theme_css' >> .cake3/tmp__liburu3Bootstraplib_in
 	echo '../../../autogen/Bootstrap_min_js' >> .cake3/tmp__liburu3Bootstraplib_in
+	echo '../../../autogen/Tooltip_js' >> .cake3/tmp__liburu3Bootstraplib_in
 	echo '../../.././lib/uru3/Bootstrap/Bootstrap' >> .cake3/tmp__liburu3Bootstraplib_in
 	echo '../../../autogen/FormSignin_css' >> .cake3/tmp__liburu3Bootstraplib_in
 	echo '../../.././lib/uru3/Bootstrap/FormSignin' >> .cake3/tmp__liburu3Bootstraplib_in
@@ -187,6 +197,8 @@ autogen/Glyphicons_halflings_regular_woff_c.o: ./Makefile autogen/Glyphicons_hal
 	$(URCC) -c $(URINCL) $(UR_CFLAGS)  -o autogen/Glyphicons_halflings_regular_woff_c.o autogen/Glyphicons_halflings_regular_woff_c.c
 autogen/TS_css_c.o: ./Makefile autogen/TS_css_c.c $(call GUARD,URCC) $(call GUARD,URINCL) $(call GUARD,UR_CFLAGS)
 	$(URCC) -c $(URINCL) $(UR_CFLAGS)  -o autogen/TS_css_c.o autogen/TS_css_c.c
+autogen/Tooltip_js_c.o: ./Makefile autogen/Tooltip_js_c.c $(call GUARD,URCC) $(call GUARD,URINCL) $(call GUARD,UR_CFLAGS)
+	$(URCC) -c $(URINCL) $(UR_CFLAGS)  -o autogen/Tooltip_js_c.o autogen/Tooltip_js_c.c
 $(call GUARD,URCC):
 	rm -f .cake3/GUARD_URCC_*
 	touch $@
@@ -265,11 +277,13 @@ autogen/Glyphicons_halflings_regular_ttf_c.o: .fix-multy1
 autogen/Glyphicons_halflings_regular_woff_c.o: .fix-multy1
 .PHONY: autogen/TS_css_c.o
 autogen/TS_css_c.o: .fix-multy1
+.PHONY: autogen/Tooltip_js_c.o
+autogen/Tooltip_js_c.o: .fix-multy1
 
 endif
 .PHONY: clean
 clean: 
-	-rm ./TS.db ./TS.exe ./TS.sql ./TS.urp ./lib/uru3/Bootstrap/lib.urp ./lib/urweb-monad-pack/lib.urp ./lib/urweb-prelude/lib.urp ./lib/urweb-utf8/UTF8_ffi.o ./lib/urweb-utf8/lib.urp .cake3/tmp__TS_in .cake3/tmp__liburu3Bootstraplib_in .cake3/tmp__liburweb-monad-packlib_in .cake3/tmp__liburweb-preludelib_in .cake3/tmp__liburweb-utf8lib_in autogen/Bootstrap_css_c.o autogen/Bootstrap_min_js_c.o autogen/Bootstrap_theme_css_c.o autogen/FormSignin_css_c.o autogen/Glyphicons_halflings_regular_eot_c.o autogen/Glyphicons_halflings_regular_svg_c.o autogen/Glyphicons_halflings_regular_ttf_c.o autogen/Glyphicons_halflings_regular_woff_c.o autogen/TS_css_c.o
+	-rm ./TS.db ./TS.exe ./TS.sql ./TS.urp ./lib/uru3/Bootstrap/lib.urp ./lib/urweb-monad-pack/lib.urp ./lib/urweb-prelude/lib.urp ./lib/urweb-utf8/UTF8_ffi.o ./lib/urweb-utf8/lib.urp .cake3/tmp__TS_in .cake3/tmp__liburu3Bootstraplib_in .cake3/tmp__liburweb-monad-packlib_in .cake3/tmp__liburweb-preludelib_in .cake3/tmp__liburweb-utf8lib_in autogen/Bootstrap_css_c.o autogen/Bootstrap_min_js_c.o autogen/Bootstrap_theme_css_c.o autogen/FormSignin_css_c.o autogen/Glyphicons_halflings_regular_eot_c.o autogen/Glyphicons_halflings_regular_svg_c.o autogen/Glyphicons_halflings_regular_ttf_c.o autogen/Glyphicons_halflings_regular_woff_c.o autogen/TS_css_c.o autogen/Tooltip_js_c.o
 	-rm -rf .cake3
 
 endif

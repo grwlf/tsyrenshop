@@ -85,6 +85,7 @@ fun template_ t (mb:transaction xbody) : transaction page =
     Uru.withBody (fn _ =>
       b <- mb;
       ss <- source "";
+      tt <- fresh;
       return
         <xml>
           <div class={B.container} style="margin-top:50px; margin-bottom:100px; max-width:730px; padding-bottom:50px">
@@ -110,15 +111,17 @@ fun template_ t (mb:transaction xbody) : transaction page =
 
               <form class={cl (B.form_inline :: B.pull_right :: [])} role="search">
                 <div class={B.input_group}>
-                  <ctextbox source={ss} class={cl (B.form_control::B.input_sm::[])} placeholder="Поиск"/>
+                  <ctextbox id={tt} source={ss} class={cl (B.form_control::B.input_sm::[])} placeholder="Поиск"/>
                   <span class={B.input_group_btn}>
                     <button class={CSS.list (B.btn ::B.input_sm :: B.btn_default :: [])} onclick={fn _ =>
                       s <- get ss;
                       ok <- rpc(search_check s);
                       if ok then
                         redirect(url(search s))
-                      else
-                        alert("Слишком короткая строка поиска")
+                      else (
+                        B.popover_show tt "Слишком короткая строка поиска"
+                        (* alert("Слишком короткая строка поиска") *)
+                        )
                     }>
                       <span class={cl (B.glyphicon :: B.glyphicon_search :: [])}></span>&nbsp;
                     </button>
@@ -137,8 +140,7 @@ fun template_ t (mb:transaction xbody) : transaction page =
               in, egestas eget quam. Fusce dapibus, tellus ac
               cursus commodo, tortor mauris condimentum nibh, ut
               fermentum massa justo sit amet risus.</p>
-              <p><a class={cl (B.btn :: B.btn_lg :: B.btn_success :: [])} href={url(main {})} role="button"
-                  style="font-size:21px">
+              <p><a class={cl (B.btn :: B.btn_lg :: B.btn_success :: [])} href={url(main {})} role="button" style="font-size:21px">
                 Sign up today
               </a></p>
             </div>
@@ -225,6 +227,7 @@ and contacts {} : transaction page =
     push_back_xml
     <xml>
       <h1>Контакты</h1>
+      Нужно будет заполнить
     </xml>
   ))
 
