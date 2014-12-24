@@ -233,6 +233,38 @@ and contacts {} : transaction page =
 
 and catalog_cat {} : transaction page =
   template_top ( X.run (
+    (*
+    xnest (fn x=><xml><div style="display:flex; flex-wrap:wrap;" class={B.row}>{x}</div></xml>) (
+      n <- lift (oneRowE1(SELECT COUNT ( * ) AS N FROM category AS C WHERE C.ParentId > 0));
+      _ <- X.query
+        (SELECT CP.CNam, CC.CNam, CC.Id
+         FROM
+          category AS CC,
+          category AS CP
+         WHERE
+          CP.Id = CC.ParentId
+         ORDER BY CP.CNam, CC.CNam, CC.Id
+        )
+        {Len=0, Cap="", List=[]}
+        (fn c st =>
+          if st.Len >= (divide n  3) then
+            cap2 <- push_back (nest (fn x=><xml><div style="padding-bottom:50px" class={cl (B.col_lg_4 :: [])}>{x}</div></xml>) (
+              P.foldlM (fn c cap2 => 
+                (if cap2 = c.CP.CNam then
+                  push_back_xml <xml>{[fstcap c.CP.CNam]} {[fstcap c.CC.CNam]}<br/></xml>
+                else
+                  push_back_xml <xml><h3 style="margin-top:0px">{[fstcap c.CP.CNam]}</h3></xml>;
+                  push_back_xml <xml>{[fstcap c.CC.CNam]}<br/></xml>);
+                return c.CP.CNam
+              ) st.Cap (List.rev st.List)
+              ));
+            return {Len=1, Cap=cap2, List=c::[]}
+          else
+            return {Len=st.Len+1, Cap=st.Cap, List=c::st.List}
+        );
+      return {}
+    );
+    *)
 
     xnest (fn x=><xml><div style="display:flex; flex-wrap:wrap;" class={B.row}>{x}</div></xml>) (
 
