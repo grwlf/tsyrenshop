@@ -234,7 +234,7 @@ and contacts {} : transaction page =
 and catalog_cat {} : transaction page =
   template_top ( X.run (
 
-    xnest (fn x=><xml><div class={B.row}>{x}</div></xml>) (
+    xnest (fn x=><xml><div style="display:flex; flex-wrap:wrap;" class={B.row}>{x}</div></xml>) (
 
       (* FIXME: What about -1 parent id? *)
       X.query_
