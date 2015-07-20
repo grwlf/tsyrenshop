@@ -8,58 +8,38 @@ import qualified Cake_MonadPack as MonadPack hiding(main)
 import qualified Cake_UTF8 as UTF8 hiding(main)
 import Cake_TS_P
 
-project = do
+(app,db) = uwapp_postgres (file "TS.urp") $ do
+  library Prelude.lib
+  library Bootstrap.lib
+  library MonadPack.lib
+  library UTF8.lib
+  allow mime "text/javascript";
+  allow mime "text/css";
+  allow mime "image/jpeg";
+  allow mime "image/png";
+  allow mime "image/gif";
+  allow mime "application/octet-stream";
+  allow url "/TS/*"
+  allow url "http://github.com*"
+  allow url "http://impredicative.com*"
+  allow url "http://hit.msk.ru*"
+  rewrite UW.all "TS/main"
+  css (file "TS.css")
+  ur (sys "list")
+  ur (sys "option")
+  ur (sys "string")
+  ur (sys "char")
+  ur (file "StyleSoup.ur")
+  ur (file "XmlGen.ur")
+  ur (file "TS.ur", file "TS.urs")
 
-  let pn = file "TS.urp"
-
-  p <- Prelude.thelib
-  b <- Bootstrap.lib
-  m <- MonadPack.lib
-  u <- UTF8.lib
-
-  a <- uwapp "-dbms postgres" pn $ do
-    allow mime "text/javascript";
-    allow mime "text/css";
-    allow mime "image/jpeg";
-    allow mime "image/png";
-    allow mime "image/gif";
-    allow mime "application/octet-stream";
-    allow url "/TS/*"
-    allow url "http://github.com*"
-    allow url "http://impredicative.com*"
-    allow url "http://hit.msk.ru*"
-    debug
-    library b
-    library m
-    library p
-    library u
-    sql (pn.="sql")
-    database ("dbname="++(takeBaseName pn))
-    rewrite UW.all "TS/main"
-    bin (file "TS.css") []
-    ur (sys "list")
-    ur (sys "option")
-    ur (sys "string")
-    ur (sys "char")
-    ur (single $ file "StyleSoup.ur")
-    ur (single $ file "XmlGen.ur")
-    ur (pair $ file "TS.ur")
-
-  db <- rule $ do
-    let sql = urpSql (toUrp a)
-    let dbn = takeBaseName sql
-    shell [cmd|dropdb --if-exists $(string dbn)|]
-    shell [cmd|createdb $(string dbn)|]
-    shell [cmd|psql -f $(sql) $(string dbn)|]
-    shell [cmd|touch @(sql.="db")|]
-
+main = writeDefaultMakefiles $ do
   rule $ do
     phony "dropdb"
     depend db
-
+  rule $ do
+    phony "run"
+    shell [cmd|$app|]
   rule $ do
     phony "all"
-    depend a
-
-main = do
-  writeMake (file "Makefile") (project)
+    depend app
